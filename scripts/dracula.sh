@@ -167,7 +167,7 @@ main() {
 
     if [ "$plugin" = "network-bandwidth" ]; then
       IFS=' ' read -r -a colors <<<$(get_tmux_option "@dracula-network-bandwidth-colors" "cyan dark_gray")
-      tmux set-option -g status-right-length 250
+      tmux set-option -g status-right-length 150
       script="#($current_dir/network_bandwidth.sh)"
     fi
 
