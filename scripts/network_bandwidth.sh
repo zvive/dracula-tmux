@@ -12,15 +12,20 @@ main() {
     output_upload_unit=""
 
     initial_download=$(cat /sys/class/net/"$network_name"/statistics/rx_bytes)
-    initial_upload=$(cat /sys/class/net/"$network_name"/statistics/tx_bytes)
-
+    if $show_upload; then
+      initial_upload=$(cat /sys/class/net/"$network_name"/statistics/tx_bytes)
+    fi
     sleep $INTERVAL
 
     final_download=$(cat /sys/class/net/"$network_name"/statistics/rx_bytes)
-    final_upload=$(cat /sys/class/net/"$network_name"/statistics/tx_bytes)
+    if $show_upload; then
+      final_upload=$(cat /sys/class/net/"$network_name"/statistics/tx_bytes)
+    fi
 
     total_download_bps=$(expr "$final_download" - "$initial_download")
+    if $show_upload; then
     total_upload_bps=$(expr "$final_upload" - "$initial_upload")
+    fi
 
     if [ "$total_download_bps" -gt 1073741824 ]; then
       output_download=$(echo "$total_download_bps 1024" | awk '{printf "%.2f \n", $1/($2 * $2 * $2)}')
