@@ -10,8 +10,9 @@ main() {
 
   # set configuration option variables
   show_fahrenheit=$(get_tmux_option "@dracula-show-fahrenheit" true)
-  show_location=$(get_tmux_option "@dracula-show-location" true)
-  fixed_location=$(get_tmux_option "@dracula-fixed-location")
+  location_show=$(get_tmux_option "@dracula-location-show" true)
+  location_city=$(get_tmux_option "@dracula-location-city")
+  location_region=$(get_tmux_option "@dracula-location-region")
   show_powerline=$(get_tmux_option "@dracula-show-powerline" false)
   show_flags=$(get_tmux_option "@dracula-show-flags" false)
   show_left_icon=$(get_tmux_option "@dracula-show-left-icon" smiley)
@@ -68,8 +69,8 @@ main() {
   fi
 
   # start weather script in background
-  if [[ "${plugins[@]}" =~ "weather" ]]; then
-    "$current_dir"/sleep_weather.sh "$show_fahrenheit" "$show_location" "$fixed_location" &
+  if [[ "${plugins[*]}" =~ "weather" ]]; then
+    "$current_dir"/sleep_weather.sh "$show_fahrenheit" "$location_city" "$location_region" "$location_show" &
   fi
 
   # Set timezone unless hidden by configuration
