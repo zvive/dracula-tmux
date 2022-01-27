@@ -1,24 +1,16 @@
 #!/usr/bin/env bash
-export LC_ALL=en_US.UTF-8
 
-# current_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# source "$current_dir"/utils.sh
 INTERVAL="1" # update interval in seconds
 
-# network_name=$(tmux show-option -gqv "@dracula-network-name")
-network_name="enp38s0"
+network_name=$(tmux show-option -gqv "@dracula-network-name")
+show_upload=$(tmux show-option -gqv "@dracula-network-show-upload")
 main() {
-  # network_name=$(get_tmux_option "@dracula-network-name", "enp38s0")
-  # if [[ -z "$network_name" ]]; then
-  #   network_name="enp38s0"
-  #   # echo "Network name not set"
-  #   # exit 1
-  # fi
   while true; do
     output_download=""
     output_upload=""
     output_download_unit=""
     output_upload_unit=""
+
     initial_download=$(cat /sys/class/net/"$network_name"/statistics/rx_bytes)
     initial_upload=$(cat /sys/class/net/"$network_name"/statistics/tx_bytes)
 
@@ -26,7 +18,7 @@ main() {
 
     final_download=$(cat /sys/class/net/"$network_name"/statistics/rx_bytes)
     final_upload=$(cat /sys/class/net/"$network_name"/statistics/tx_bytes)
-    echo $final_download >> './log.txt'
+
     total_download_bps=$(expr "$final_download" - "$initial_download")
     total_upload_bps=$(expr "$final_upload" - "$initial_upload")
 
@@ -51,8 +43,11 @@ main() {
       output_upload=$(echo "$total_upload_bps 1024" | awk '{printf "%.2f \n", $1/$2}')
       output_upload_unit="kB/s"
     fi
-    echo "↓ $output_download $output_download_unit • ↑ $output_upload $output_upload_unit" >>'./log.txt'
-    echo "↓ $output_download $output_download_unit • ↑ $output_upload $output_upload_unit"
+    output="↓ $output_download $output_download_unit"
+    if $show_upload; then
+      output = "$output • ↑ $output_upload $output_upload_unit"
+    fi
+    echo $output
   done
 }
 main
