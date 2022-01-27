@@ -32,22 +32,21 @@ main() {
       output_download=$(echo "$total_download_bps 1024" | awk '{printf "%.2f \n", $1/$2}')
       output_download_unit="kB/s"
     fi
-
-    if [ "$total_upload_bps" -gt 1073741824 ]; then
-      output_upload=$(echo "$total_download_bps 1024" | awk '{printf "%.2f \n", $1/($2 * $2 * $2)}')
-      output_upload_unit="gB/s"
-    elif [ "$total_upload_bps" -gt 1048576 ]; then
-      output_upload=$(echo "$total_upload_bps 1024" | awk '{printf "%.2f \n", $1/($2 * $2)}')
-      output_upload_unit="mB/s"
-    else
-      output_upload=$(echo "$total_upload_bps 1024" | awk '{printf "%.2f \n", $1/$2}')
-      output_upload_unit="kB/s"
-    fi
     output="↓ $output_download $output_download_unit"
     if $show_upload; then
-      output = "$output • ↑ $output_upload $output_upload_unit"
+      if [ "$total_upload_bps" -gt 1073741824 ]; then
+        output_upload=$(echo "$total_download_bps 1024" | awk '{printf "%.2f \n", $1/($2 * $2 * $2)}')
+        output_upload_unit="gB/s"
+      elif [ "$total_upload_bps" -gt 1048576 ]; then
+        output_upload=$(echo "$total_upload_bps 1024" | awk '{printf "%.2f \n", $1/($2 * $2)}')
+        output_upload_unit="mB/s"
+      else
+        output_upload=$(echo "$total_upload_bps 1024" | awk '{printf "%.2f \n", $1/$2}')
+        output_upload_unit="kB/s"
+      fi
+      output="$output • ↑ $output_upload $output_upload_unit"
     fi
-    echo $output
+    echo "$output"
   done
 }
 main
